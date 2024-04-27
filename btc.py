@@ -3,14 +3,33 @@
 
 import json
 import os
+import subprocess
 from datetime import datetime
 
 import requests
 
-data = {}
+
+def runcmd(cmd, verbose=False, *args, **kwargs):
+
+    process = subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True
+    )
+    std_out, std_err = process.communicate()
+    if verbose:
+        print(std_out.strip(), std_err)
+    pass
+
+
 home_dir = os.environ["HOME"]
+filename = home_dir + "/btc3.json"
+runcmd(
+    "wget -O " + filename + " -q https://api.coinbase.com/v2/prices/BTC-USD/spot",
+    verbose=False,
+)
+
+data = {}
 # load JSON data from a file
-with open(home_dir + "/btc.json", "r") as f:
+with open(filename, "r") as f:
     data1 = json.load(f)
 
 # parse the JSON data
