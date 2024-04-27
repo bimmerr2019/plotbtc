@@ -11,7 +11,7 @@ You will need to edit your .config/waybar/config file and follow the instruction
 - btc.json
 - btc_history.txt
 
-git clone https://github.com/plotbtc/plotbtc.git
-modify ~/.config/waybar/config
+- git clone https://github.com/plotbtc/plotbtc.git
+- modify ~/.config/waybar/config
 
 done.
