@@ -1,0 +1,14 @@
+# add this to your waybar config anywhere in the file (~/.config/waybar/config)
+
+"custom/btc": {
+    "format": "{}",
+    "interval": 300,
+    "return-type": "json",
+    "exec": "~/plotbtc/btc.py",
+    "exec-if": "ping 1.1.1.1 -c1",
+    "tooltip" : false,
+},
+
+# and add this where you want the BTC price to appear in your bar, inside one of the modules:
+
+	"custom/btc",
