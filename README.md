@@ -11,6 +11,8 @@ You will need to edit your .config/waybar/config file and follow the instruction
 - btc.json
 - btc_history.txt
 
+So the install is two simple steps
+
 - git clone https://github.com/plotbtc/plotbtc.git
 - modify ~/.config/waybar/config
 
