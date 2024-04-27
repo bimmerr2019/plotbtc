@@ -15,5 +15,6 @@ So the install is two simple steps
 
 - git clone https://github.com/plotbtc/plotbtc.git
 - modify ~/.config/waybar/config
+- refresh waybar (mine is super ALT r, but yours will be different)
 
 done.
