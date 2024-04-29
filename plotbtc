@@ -67,10 +67,27 @@ def plot_data(screen):
         for y in range(4, height - 4):
             screen.addstr(y, x, "|")
 
-    # Display the last BTC price at the top right
+    # Display prices on the top right
     if len(prices) > 0:
+        open_price = prices[0]
+        high_price = max(prices)
+        low_price = min(prices)
         last_price = prices[-1]
-        screen.addstr(0, width - len(f"Last BTC Price: {last_price:.1f}") - 1, f"Last BTC Price: {last_price:.1f}")
+
+        price_info = [
+            f"Open: {open_price:.1f}",
+            f"High: {high_price:.1f}",
+            f"Low: {low_price:.1f}",
+            f"Last: {last_price:.1f}"
+        ]
+
+        max_price_width = max(len(info) for info in price_info)
+        for i, info in enumerate(price_info):
+            screen.addstr(i, width - max_price_width - 1, info)
+
+    # Display the title in the top center
+    title = "Bitcoin Price Chart from local data"
+    screen.addstr(0, (width - len(title)) // 2, title)
 
     # Display the plot
     screen.refresh()
