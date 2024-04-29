@@ -6,15 +6,15 @@ if desired add to .zshrc:
 
 alias p="~/plotbtc/plotbtc"
 
-You will need to edit your .config/waybar/config file and follow the instructions in the add_to_waybar_config file. The waybar module in the config file calls the btc.py program every 5 minutes. Two files will store the btc price in your home directory:
+You will need to edit your .config/waybar/config file and follow the instructions in the add_to_waybar_config file. The waybar module in the config file calls the btc.py program every 5 minutes. The btc price history is stored in your home directory:
 
-- btc.json
 - btc_history.txt
 
 So the install is two simple steps
 
 - git clone https://github.com/plotbtc/plotbtc.git
 - modify ~/.config/waybar/config
-- refresh waybar (mine is super ALT r, but yours will be different)
 
-done.
+You will need to refresh your waybar:
+
+- refresh waybar (mine is super ALT r, but yours will be different)
