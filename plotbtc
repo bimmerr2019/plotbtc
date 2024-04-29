@@ -13,7 +13,7 @@ def plot_data(screen):
         for line in file:
             parts = line.strip().split()
             if len(parts) >= 3:
-                timestamp = datetime.strptime(parts[1], "%H:%M:%S")
+                timestamp = datetime.strptime(parts[0] + " " + parts[1], "%Y-%m-%d %H:%M:%S")
                 price = float(parts[2])
                 data.append((timestamp, price))
 
@@ -42,7 +42,6 @@ def plot_data(screen):
 
     # Draw the axes
     screen.addstr(height - 4, 0, "+" + "-" * (width - 2) + "+")
-    screen.addstr(height - 2, 0, "Time (hh:mm)")
 
     # Mark the y-axis with price labels
     y_ticks = [min_price + i * price_range / 4 for i in range(5)]
@@ -50,11 +49,28 @@ def plot_data(screen):
         y = int((tick - min_price) * price_scale) + 4
         screen.addstr(height - y, 0, f"{tick:.1f}")
 
-    # Mark the x-axis with time labels
+    # Mark the x-axis with time labels and day of the week
     x_ticks = [times[i * (len(times) - 1) // 4] for i in range(5)]
     for tick in x_ticks:
         x = (times.index(tick) * (width - 12) // (len(prices) - 1)) + 6
         screen.addstr(height - 1, x, tick.strftime("%H:%M"))
+        screen.addstr(height - 3, x, tick.strftime("%a"))  # Display day of the week
+
+    # Draw horizontal grid lines
+    for i in range(1, 4):
+        y = int(height - 4 - i * (height - 8) / 4)
+        screen.addstr(y, 0, "-" * (width - 1))
+
+    # Draw vertical grid lines
+    for i in range(1, 4):
+        x = i * (width - 12) // 4 + 6
+        for y in range(4, height - 4):
+            screen.addstr(y, x, "|")
+
+    # Display the last BTC price at the top right
+    if len(prices) > 0:
+        last_price = prices[-1]
+        screen.addstr(0, width - len(f"Last BTC Price: {last_price:.1f}") - 1, f"Last BTC Price: {last_price:.1f}")
 
     # Display the plot
     screen.refresh()
