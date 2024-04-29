@@ -21,7 +21,7 @@ def runcmd(cmd, verbose=False, *args, **kwargs):
 
 
 home_dir = os.environ["HOME"]
-filename = home_dir + "/btc3.json"
+filename = home_dir + "/btc.json"
 runcmd(
     "wget -O " + filename + " -q https://api.coinbase.com/v2/prices/BTC-USD/spot",
     verbose=False,
