@@ -1,43 +1,38 @@
 #!/usr/bin/env python
-# From https://raw.githubusercontent.com/rxyhn/dotfiles/main/home/rxyhn/modules/desktop/waybar/scripts/waybar-wttr.py
 
 import json
 import os
-import subprocess
+import sys
 from datetime import datetime
 
 import requests
 
+def get_btc_price():
+    url = "https://api.coinbase.com/v2/prices/BTC-USD/spot"
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        data = response.json()
+        BTC = data["data"]["amount"]
+        btcprice = BTC.split(".")[0]
+        return btcprice
+    else:
+        return None
 
-def runcmd(cmd, verbose=False, *args, **kwargs):
+# Call the function to get the BTC price
+btcprice = get_btc_price()
 
-    process = subprocess.Popen(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True
-    )
-    std_out, std_err = process.communicate()
-    if verbose:
-        print(std_out.strip(), std_err)
-    pass
-
+# Check if btcprice is obtained
+# if not, Exit
+if btcprice is None:
+    sys.exit(1)
 
 home_dir = os.environ["HOME"]
-filename = home_dir + "/btc.json"
-runcmd(
-    "wget -O " + filename + " -q https://api.coinbase.com/v2/prices/BTC-USD/spot",
-    verbose=False,
-)
 
 data = {}
-# load JSON data from a file
-with open(filename, "r") as f:
-    data1 = json.load(f)
-
-# parse the JSON data
-BTC = data1["data"]["amount"]
-btcprice = BTC.split(".")[0]
 data["text"] = " BTC $" + btcprice
 
-# print the JSON-formatted data
+# print the JSON-formatted data for the waybar
 print(json.dumps(data))
 
 filename = home_dir + "/btc_history.txt"
