@@ -4,39 +4,51 @@ import curses
 import os
 from datetime import datetime, timedelta
 
-
 def plot_data(screen):
     home_dir = os.environ["HOME"]
     # Read data from the file
     data = []
-    with open(home_dir + "/btc_history.txt", "r") as file:
-        prev_timestamp = None
-        prev_price = None
-        for line in file:
-            parts = line.strip().split()
-            if len(parts) >= 3:
-                timestamp = datetime.strptime(parts[0] + " " + parts[1], "%Y-%m-%d %H:%M:%S")
-                price = float(parts[2])
-                
-                if prev_timestamp is not None:
-                    # Calculate the time difference between the current and previous data points
-                    time_diff = (timestamp - prev_timestamp).total_seconds()
+    try:
+        with open(home_dir + "/btc_history.txt", "r") as file:
+            prev_timestamp = None
+            prev_price = None
+            for line in file:
+                parts = line.strip().split()
+                if len(parts) >= 3:
+                    timestamp = datetime.strptime(parts[0] + " " + parts[1], "%Y-%m-%d %H:%M:%S")
+                    price = float(parts[2])
                     
-                    # If the time difference is greater than 5 minutes, fill in the missing data points
-                    if time_diff > 300:
-                        num_missing_points = int(time_diff // 300) - 1
-                        for i in range(num_missing_points):
-                            missing_timestamp = prev_timestamp + timedelta(minutes=5 * (i + 1))
-                            data.append((missing_timestamp, prev_price))
-                
-                data.append((timestamp, price))
-                prev_timestamp = timestamp
-                prev_price = price
+                    if prev_timestamp is not None:
+                        # Calculate the time difference between the current and previous data points
+                        time_diff = (timestamp - prev_timestamp).total_seconds()
+                        
+                        # If the time difference is greater than 5 minutes, fill in the missing data points
+                        if time_diff > 300:
+                            num_missing_points = int(time_diff // 300) - 1
+                            for i in range(num_missing_points):
+                                missing_timestamp = prev_timestamp + timedelta(minutes=5 * (i + 1))
+                                data.append((missing_timestamp, prev_price))
+                    
+                    data.append((timestamp, price))
+                    prev_timestamp = timestamp
+                    prev_price = price
+    except FileNotFoundError:
+        #print("File not found.")
+        exit()
 
     # Limit data to 1440 points if there are more, this should be about 5 days
-    N = 1440
+    N = 1400
     if len(data) > N:
         data = data[len(data)-N:]
+
+    # Print the data
+    for d in data:
+        print(d[0], d[1])
+
+    # Check if there are at least two data points
+    if len(data) < 2:
+        #print("Insufficient data points to plot.")
+        exit()
 
     # Extract time and price from the data
     times = [d[0] for d in data]
