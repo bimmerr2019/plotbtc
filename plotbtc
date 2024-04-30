@@ -119,7 +119,7 @@ def plot_data(screen,data):
             screen.addstr(i, width - max_price_width - 1, info)
 
     # Display the title in the top center
-    title = "Bitcoin Price Chart from local data"
+    title = "Bitcoin Price Chart from stored waybar data"
     screen.addstr(0, (width - len(title)) // 2, title)
 
     # Calculate the actual time delta between data points and display it on the left.
