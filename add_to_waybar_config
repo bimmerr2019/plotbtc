@@ -1,4 +1,4 @@
-# add this to your waybar config anywhere in the file (~/.config/waybar/config)
+# add this to your waybar config close to the top of the file (~/.config/waybar/config)
 
 "custom/btc": {
     "format": "{}",
