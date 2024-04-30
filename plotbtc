@@ -45,10 +45,14 @@ def read_data():
         exit()
 
     # Limit data to approximately 5 days if there are more data points
+    # Limit data to 1440 points.
+    N=1440
     if len(delta_times) >= 5:
         avg_spacing = sum(delta_times) / len(delta_times)
-        if len(data) > 5 * 24 * 60 * 60 / avg_spacing:
-            data = data[len(data) - int(5 * 24 * 60 * 60 / avg_spacing):]
+        # if len(data) > 5 * 24 * 60 * 60 / avg_spacing:
+        #     data = data[len(data) - int(5 * 24 * 60 * 60 / avg_spacing):]
+        if len(data) > N:
+            data = data[len(data) - N:]
 
     return data
 
