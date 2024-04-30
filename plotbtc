@@ -4,14 +4,15 @@ import curses
 import os
 from datetime import datetime, timedelta
 
-def plot_data(screen):
+def read_data():
     home_dir = os.environ["HOME"]
-    # Read data from the file
     data = []
     try:
         with open(home_dir + "/btc_history.txt", "r") as file:
             prev_timestamp = None
             prev_price = None
+            delta_times = []
+            
             for line in file:
                 parts = line.strip().split()
                 if len(parts) >= 3:
@@ -19,36 +20,39 @@ def plot_data(screen):
                     price = float(parts[2])
                     
                     if prev_timestamp is not None:
-                        # Calculate the time difference between the current and previous data points
-                        time_diff = (timestamp - prev_timestamp).total_seconds()
+                        delta_time = (timestamp - prev_timestamp).total_seconds()
+                        delta_times.append(delta_time)
                         
-                        # If the time difference is greater than 5 minutes, fill in the missing data points
-                        if time_diff > 300:
-                            num_missing_points = int(time_diff // 300) - 1
-                            for i in range(num_missing_points):
-                                missing_timestamp = prev_timestamp + timedelta(minutes=5 * (i + 1))
-                                data.append((missing_timestamp, prev_price))
+                        if len(delta_times) >= 5:
+                            avg_spacing = sum(delta_times) / len(delta_times)
+                            
+                            if delta_time > avg_spacing:
+                                num_missing_points = int(delta_time // avg_spacing) - 1
+                                for i in range(num_missing_points):
+                                    missing_timestamp = prev_timestamp + timedelta(seconds=avg_spacing * (i + 1))
+                                    data.append((missing_timestamp, prev_price))
                     
                     data.append((timestamp, price))
                     prev_timestamp = timestamp
                     prev_price = price
     except FileNotFoundError:
-        #print("File not found.")
+        print("File ~/btc_history.txt not found.")
         exit()
-
-    # Limit data to 1440 points if there are more, this should be about 5 days
-    N = 1400
-    if len(data) > N:
-        data = data[len(data)-N:]
-
-    # Print the data
-    for d in data:
-        print(d[0], d[1])
 
     # Check if there are at least two data points
     if len(data) < 2:
-        #print("Insufficient data points to plot.")
+        print("File ~/btc_history.txt only has one data point, not enough to plot.")
         exit()
+
+    # Limit data to approximately 5 days if there are more data points
+    if len(delta_times) >= 5:
+        avg_spacing = sum(delta_times) / len(delta_times)
+        if len(data) > 5 * 24 * 60 * 60 / avg_spacing:
+            data = data[len(data) - int(5 * 24 * 60 * 60 / avg_spacing):]
+
+    return data
+
+def plot_data(screen,data):
 
     # Extract time and price from the data
     times = [d[0] for d in data]
@@ -118,9 +122,38 @@ def plot_data(screen):
     title = "Bitcoin Price Chart from local data"
     screen.addstr(0, (width - len(title)) // 2, title)
 
+    # Calculate the actual time delta between data points and display it on the left.
+    if len(data) >= 2:
+        total_delta = (data[-1][0] - data[0][0]).total_seconds()
+        avg_delta = total_delta / (len(data) - 1)
+
+        # Determine the appropriate time unit based on the average delta
+        if avg_delta < 60:
+            time_unit = "Second"
+            time_delta = int(avg_delta)
+        elif avg_delta < 3600:
+            time_unit = "Minute"
+            time_delta = int(avg_delta // 60)
+        elif avg_delta < 86400:
+            time_unit = "Hour"
+            time_delta = int(avg_delta // 3600)
+        else:
+            time_unit = "Day"
+            time_delta = int(avg_delta // 86400)
+
+        # Display the time delta in the upper left corner
+        screen.addstr(0, 0, f"{time_delta} {time_unit} Chart, {len(data)} data points")
+
     # Display the plot
     screen.refresh()
     screen.getch()
 
 
-curses.wrapper(plot_data)
+# Read the data outside the plot_data function
+data = read_data()
+
+# # Print the data for error checking
+# for d in data:
+#     print(d[0], d[1])
+
+curses.wrapper(lambda screen: plot_data(screen, data))
