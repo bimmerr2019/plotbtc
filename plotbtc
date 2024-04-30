@@ -17,9 +17,10 @@ def plot_data(screen):
                 price = float(parts[2])
                 data.append((timestamp, price))
 
-    # Limit data to 1440 points if there are more
-    if len(data) > 1440:
-        data = data[:1440]
+    # Limit data to 1440 points if there are more, this should be about 5 days
+    N = 1400
+    if len(data) > N:
+        data = data[len(data)-N:]
 
     # Extract time and price from the data
     times = [d[0] for d in data]
