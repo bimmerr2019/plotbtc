@@ -2,7 +2,7 @@
 
 import curses
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def plot_data(screen):
@@ -10,15 +10,31 @@ def plot_data(screen):
     # Read data from the file
     data = []
     with open(home_dir + "/btc_history.txt", "r") as file:
+        prev_timestamp = None
+        prev_price = None
         for line in file:
             parts = line.strip().split()
             if len(parts) >= 3:
                 timestamp = datetime.strptime(parts[0] + " " + parts[1], "%Y-%m-%d %H:%M:%S")
                 price = float(parts[2])
+                
+                if prev_timestamp is not None:
+                    # Calculate the time difference between the current and previous data points
+                    time_diff = (timestamp - prev_timestamp).total_seconds()
+                    
+                    # If the time difference is greater than 5 minutes, fill in the missing data points
+                    if time_diff > 300:
+                        num_missing_points = int(time_diff // 300) - 1
+                        for i in range(num_missing_points):
+                            missing_timestamp = prev_timestamp + timedelta(minutes=5 * (i + 1))
+                            data.append((missing_timestamp, prev_price))
+                
                 data.append((timestamp, price))
+                prev_timestamp = timestamp
+                prev_price = price
 
     # Limit data to 1440 points if there are more, this should be about 5 days
-    N = 1400
+    N = 1440
     if len(data) > N:
         data = data[len(data)-N:]
 
