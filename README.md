@@ -19,7 +19,7 @@ The btc price history is stored in your home directory:
 So the install is:
 
 - cd
-- got clone https://github.com/bimmerr2019/plotbtc.git
+- git clone https://github.com/bimmerr2019/plotbtc.git
 - modify ~/.config/waybar/config
 
 You will need to refresh your waybar to start the program running:
