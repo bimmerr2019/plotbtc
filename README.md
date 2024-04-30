@@ -13,9 +13,9 @@ You will need to edit your .config/waybar/config file and follow the instruction
 So the install is:
 
 - cd
-- git clone https://github.com/plotbtc/plotbtc.git
+- got clone https://github.com/bimmerr2019/plotbtc.git
 - modify ~/.config/waybar/config
 
-You will need to refresh your waybar:
+You will need to refresh your waybar to start the program running:
 
 - refresh waybar (mine is super ALT r, but yours will be different)
